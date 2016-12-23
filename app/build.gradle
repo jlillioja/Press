@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 23
@@ -17,13 +19,45 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile 'com.android.support:appcompat-v7:23.1.0'
+
+    kapt 'com.google.dagger:dagger-compiler:2.8'
+    compile 'com.google.dagger:dagger:2.8'
+    provided 'javax.annotation:jsr250-api:1.0'
+
+    // DBFlow
+    ext.dbflow_version = "4.0.0-beta3"
+    kapt "com.github.Raizlabs.DBFlow:dbflow-processor:${dbflow_version}"
+    compile "com.github.Raizlabs.DBFlow:dbflow-core:${dbflow_version}"
+    compile "com.github.Raizlabs.DBFlow:dbflow:${dbflow_version}"
+
+
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:23.4.0'
     testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-core:2.4.1'
+    testCompile 'org.robolectric:robolectric:3.1.4'
+    testCompile 'org.khronos:opengl-api:gl1.1-android-2.1_r1'
+
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
+    testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+    compile 'org.robolectric:robolectric-annotations:3.1.4'
+}
+
+repositories {
+    mavenCentral()
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    maven { url 'https://raw.github.com/Raizlabs/maven-releases/master/releases' }
+    maven { url "https://www.jitpack.io" }
+    jcenter()
 }
