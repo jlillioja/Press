@@ -3,6 +3,7 @@ package com.jlillioja.press
 import android.app.Activity
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import com.jlillioja.press.database.DatabaseManager
 
 import kotlinx.android.synthetic.main.activity_main.*
 import org.robolectric.annotation.Implements

@@ -1,4 +1,4 @@
-package com.jlillioja.press
+package com.jlillioja.press.database
 
 import javax.inject.Inject
 

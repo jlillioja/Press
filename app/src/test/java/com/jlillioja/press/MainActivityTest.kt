@@ -1,5 +1,6 @@
 package com.jlillioja.press
 
+import com.jlillioja.press.database.DatabaseManager
 import kotlinx.android.synthetic.main.activity_main.*
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -9,7 +10,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, shadows = arrayOf(MainActivity::class))
+@Config(constants = BuildConfig::class)
 class MainActivityTest {
 
     @Test
