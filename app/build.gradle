@@ -27,11 +27,6 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile 'com.android.support:appcompat-v7:23.1.0'
-
-    kapt 'com.google.dagger:dagger-compiler:2.8'
-    compile 'com.google.dagger:dagger:2.8'
-    provided 'javax.annotation:jsr250-api:1.0'
 
     // DBFlow
     ext.dbflow_version = "4.0.0-beta3"
@@ -43,15 +38,20 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:2.4.1'
-    testCompile 'org.robolectric:robolectric:3.1.4'
-    testCompile 'org.khronos:opengl-api:gl1.1-android-2.1_r1'
 
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
     testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.google.dagger:dagger:2.8'
     compile 'org.robolectric:robolectric-annotations:3.1.4'
+    compile 'com.android.support:support-v4:23.4.0'
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-core:2.4.1'
+    testCompile 'org.robolectric:robolectric:3.1.4'
+    testCompile 'org.khronos:opengl-api:gl1.1-android-2.1_r1'
+    kapt 'com.google.dagger:dagger-compiler:2.8'
+    provided 'javax.annotation:jsr250-api:1.0'
 }
 
 repositories {

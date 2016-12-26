@@ -28,6 +28,8 @@ class MainActivityTest {
         activity.submit.performClick()
 
         verify(mockDatabaseManager).saveLift(anyString(), anyInt(), anyInt(), anyInt())
+
+        assert(activity.fragmentManager.findFragmentById(R.id.history_fragment).isVisible)
     }
 }
 

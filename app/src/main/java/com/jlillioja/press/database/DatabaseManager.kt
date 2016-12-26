@@ -5,7 +5,7 @@ import javax.inject.Inject
 
 open class DatabaseManager {
 
-    fun saveLift(exercise : String, sets : Int, reps : Int, weight : Int) {
+    open fun saveLift(exercise : String, sets : Int, reps : Int, weight : Int) {
         val lift = Lift()
 
         lift.exercise = exercise

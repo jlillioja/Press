@@ -1,6 +1,7 @@
 package com.jlillioja.press
 
 import android.app.Activity
+import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import com.jlillioja.press.database.DatabaseManager
@@ -10,8 +11,7 @@ import org.robolectric.annotation.Implements
 import javax.inject.Inject
 
 @Implements
-class MainActivity() : Activity() {
-
+class MainActivity() : Activity(), History.OnFragmentInteractionListener {
     @Inject
     lateinit  var databaseManager: DatabaseManager
 
@@ -19,6 +19,15 @@ class MainActivity() : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         submit.setOnClickListener { saveCurrent() }
+
+        setUpHistoryFragment()
+    }
+
+    private fun setUpHistoryFragment() {
+        fragmentManager.beginTransaction()
+                .add(R.id.history_fragment, History())
+                .commit()
+
     }
 
     fun saveCurrent() {
@@ -28,4 +37,11 @@ class MainActivity() : Activity() {
                 reps = reps.text.toString().toInt(),
                 weight = weight.text.toString().toInt())
     }
+
+    override fun onFragmentInteraction(uri: Uri?) {
+        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+
 }
+
