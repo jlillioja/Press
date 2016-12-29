@@ -11,7 +11,8 @@ import org.robolectric.annotation.Implements
 import javax.inject.Inject
 
 @Implements
-class MainActivity() : Activity(), History.OnFragmentInteractionListener {
+class MainActivity() : Activity(), HistoryFragment.OnFragmentInteractionListener {
+
     @Inject
     lateinit  var databaseManager: DatabaseManager
 
@@ -25,7 +26,7 @@ class MainActivity() : Activity(), History.OnFragmentInteractionListener {
 
     private fun setUpHistoryFragment() {
         fragmentManager.beginTransaction()
-                .add(R.id.history_fragment, History())
+                .add(R.id.history_fragment, HistoryFragment.newInstance())
                 .commit()
 
     }
@@ -38,10 +39,8 @@ class MainActivity() : Activity(), History.OnFragmentInteractionListener {
                 weight = weight.text.toString().toInt())
     }
 
-    override fun onFragmentInteraction(uri: Uri?) {
+    override fun onFragmentInteraction(uri: Uri) {
         throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
-
-
 }
 

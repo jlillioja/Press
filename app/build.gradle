@@ -27,6 +27,7 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile 'io.reactivex:rxkotlin:0.60.0'
 
     // DBFlow
     ext.dbflow_version = "4.0.0-beta3"
@@ -52,6 +53,8 @@ dependencies {
     testCompile 'org.khronos:opengl-api:gl1.1-android-2.1_r1'
     kapt 'com.google.dagger:dagger-compiler:2.8'
     provided 'javax.annotation:jsr250-api:1.0'
+    provided "org.projectlombok:lombok:1.12.6"
+    kapt "org.projectlombok:lombok:1.12.6"
 }
 
 repositories {

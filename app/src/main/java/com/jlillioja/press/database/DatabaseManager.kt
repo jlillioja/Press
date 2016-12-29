@@ -1,19 +1,21 @@
 package com.jlillioja.press.database
 
+import rx.Observable
 import javax.inject.Inject
 
 
 open class DatabaseManager {
 
     open fun saveLift(exercise : String, sets : Int, reps : Int, weight : Int) {
-        val lift = Lift()
+        Lift(exercise, sets, reps, weight).save()
+    }
 
-        lift.exercise = exercise
-        lift.sets = sets
-        lift.reps = reps
-        lift.weight = weight
-
+    open fun saveLift(lift: Lift) {
         lift.save()
+    }
+
+    open fun getLiftsObservable() : Observable<List<Lift>> {
+        return Observable.empty()
     }
 
 }
