@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.jlillioja.press.database.DatabaseManager
 import com.jlillioja.press.database.Lift
+import javax.inject.Inject
 
 
 /**
@@ -19,7 +20,7 @@ import com.jlillioja.press.database.Lift
  * Use the [HistoryFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class HistoryFragment : Fragment() {
+open class HistoryFragment : Fragment() {
 
     private var listener: OnFragmentInteractionListener? = null
     var displayedLifts: List<Lift>? = null

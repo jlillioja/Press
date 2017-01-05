@@ -24,10 +24,29 @@ android {
     }
 }
 
+kapt {
+    generateStubs = true
+}
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
+
+    // Kotlin
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+
+    // Dagger 2
+    ext.dagger_version = "2.8"
+    compile "com.google.dagger:dagger:${dagger_version}"
+    kapt "com.google.dagger:dagger-compiler:${dagger_version}"
+    kaptTest "com.google.dagger:dagger-compiler:${dagger_version}"
+    kaptAndroidTest "com.google.dagger:dagger-compiler:${dagger_version}"
+    provided 'javax.annotation:javax.annotation-api:1.2'
+
+    // Rx
+    compile 'io.reactivex:rxandroid:1.2.1'
     compile 'io.reactivex:rxkotlin:0.60.0'
+
 
     // DBFlow
     ext.dbflow_version = "4.0.0-beta3"
@@ -36,23 +55,22 @@ dependencies {
     compile "com.github.Raizlabs.DBFlow:dbflow:${dbflow_version}"
 
 
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
+    androidTestCompile 'commons-io:commons-io:2.4'
+    androidTestCompile 'com.android.support.test:testing-support-lib:0.1'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
 
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
     testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
     compile 'com.android.support:appcompat-v7:23.4.0'
-    compile 'com.google.dagger:dagger:2.8'
     compile 'org.robolectric:robolectric-annotations:3.1.4'
     compile 'com.android.support:support-v4:23.4.0'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.4.1'
     testCompile 'org.robolectric:robolectric:3.1.4'
     testCompile 'org.khronos:opengl-api:gl1.1-android-2.1_r1'
-    kapt 'com.google.dagger:dagger-compiler:2.8'
-    provided 'javax.annotation:jsr250-api:1.0'
+    testCompile "com.nhaarman:mockito-kotlin:1.1.0"
     provided "org.projectlombok:lombok:1.12.6"
     kapt "org.projectlombok:lombok:1.12.6"
 }
@@ -64,3 +82,5 @@ repositories {
     maven { url "https://www.jitpack.io" }
     jcenter()
 }
+
+

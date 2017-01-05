@@ -1,8 +1,8 @@
 package com.jlillioja.press.database
 
+import dagger.Provides
 import rx.Observable
 import javax.inject.Inject
-
 
 open class DatabaseManager {
 
@@ -17,5 +17,4 @@ open class DatabaseManager {
     open fun getLiftsObservable() : Observable<List<Lift>> {
         return Observable.empty()
     }
-
 }
