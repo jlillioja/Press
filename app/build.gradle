@@ -18,6 +18,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+            minifyEnabled false
+            debuggable true
+        }
     }
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -50,9 +54,6 @@ dependencies {
     kaptAndroidTest "com.google.dagger:dagger-compiler:${dagger_version}"
     provided 'javax.annotation:javax.annotation-api:1.2'
 
-    // Rx
-    compile 'io.reactivex:rxandroid:1.2.1'
-    compile 'io.reactivex:rxkotlin:0.60.0'
 
     // Anko
     compile 'org.jetbrains.anko:anko-sdk23:0.9.1' // sdk19, sdk21, sdk23 are also available
@@ -81,8 +82,6 @@ dependencies {
     testCompile 'org.robolectric:robolectric:3.1.4'
     testCompile 'org.khronos:opengl-api:gl1.1-android-2.1_r1'
     testCompile "com.nhaarman:mockito-kotlin:1.1.0"
-    provided "org.projectlombok:lombok:1.12.6"
-    kapt "org.projectlombok:lombok:1.12.6"
 
     compile 'com.google.android.gms:play-services-auth:10.2.1'
     compile 'pub.devrel:easypermissions:0.2.1'
@@ -92,7 +91,10 @@ dependencies {
     compile('com.google.apis:google-api-services-sheets:v4-rev466-1.22.0') {
         exclude group: 'org.apache.httpcomponents'
     }
+
+
 }
+
 
 repositories {
     mavenCentral()
