@@ -46,7 +46,6 @@ open class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
     open lateinit var databaseManager: DatabaseManager
 
     val REQUEST_ACCOUNT_PICKER = 1000
-
     val REQUEST_AUTHORIZATION = 1001
     val REQUEST_GOOGLE_PLAY_SERVICES = 1002
     val REQUEST_PERMISSION_GET_ACCOUNTS = 1003
@@ -57,7 +56,7 @@ open class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
 
 
     private lateinit var mCallApiButton: Button
-    private lateinit var mOutputText: TextView
+    lateinit var mOutputText: TextView
 
     val mCredential: GoogleAccountCredential by lazy {
         GoogleAccountCredential
@@ -71,10 +70,14 @@ open class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
 
         verticalLayout {
             mCallApiButton = button {
+                text = "Button"
                 onClick { getResultsFromApi() }
             }
-            mOutputText = textView {
-
+            scrollView {
+                mOutputText = textView {
+                    text = "Click the button to link an account"
+                    textSize = 18f
+                }
             }
         }
     }
@@ -199,23 +202,16 @@ open class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
 
     }
 
-    internal class MakeRequestTask(credential: GoogleAccountCredential, val context: Context) : AsyncTask<Void, Void, List<String>>() {
-        private var mService: Sheets? = null
+    internal class MakeRequestTask(credential: GoogleAccountCredential,
+                                   val activity: MainActivity) : AsyncTask<Void, Void, List<String>>() {
+        private var mService: Sheets = Sheets.Builder(AndroidHttp.newCompatibleTransport(), JacksonFactory.getDefaultInstance(), credential)
+                .setApplicationName("com.jlillioja.Press")
+                .build()
+
         private var mLastError: Exception? = null
-
-        init {
-            val transport = AndroidHttp.newCompatibleTransport()
-            val jsonFactory = JacksonFactory.getDefaultInstance()
-            mService = Sheets.Builder(
-                    transport, jsonFactory, credential)
-                    .setApplicationName("com.jlillioja.Press")
-                    .build()
-        }
-
         private fun output(text: String) {
-            context.runOnUiThread {
-
-                Toast.makeText(context, text, LENGTH_SHORT).show()
+            activity.runOnUiThread {
+                activity.mOutputText.text = text
             }
         }
 
@@ -227,7 +223,7 @@ open class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
             try {
                 return dataFromApi
             } catch (e: UserRecoverableAuthIOException) {
-                ContextCompat.startActivity(context, e.intent, null)
+                ContextCompat.startActivity(activity, e.intent, null)
                 return dataFromApi
             } catch (e: Exception) {
                 mLastError = e
@@ -268,11 +264,11 @@ open class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
             output("about to get stuff")
         }
 
-        override fun onPostExecute(output: List<String>?) {
-            if (output == null || output.size === 0) {
-                this.output( "No results returned.")
+        override fun onPostExecute(result: List<String>?) {
+            if (result == null || result.size === 0) {
+                output( "No results returned.")
             } else {
-                this.output(output.fold("These are the results"){ old, new -> old+new})
+                output(result.fold("These are the results\n"){ old, new -> old+"\n"+new})
             }
         }
     }
