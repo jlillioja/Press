@@ -29,6 +29,8 @@ import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.client.util.ExponentialBackOff
 import com.google.api.services.sheets.v4.Sheets
 import com.google.api.services.sheets.v4.SheetsScopes
+import com.google.api.services.sheets.v4.model.Sheet
+import com.google.api.services.sheets.v4.model.Spreadsheet
 
 import com.jlillioja.press.database.DatabaseManager
 import org.jetbrains.anko.*
@@ -49,11 +51,9 @@ open class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
     val REQUEST_AUTHORIZATION = 1001
     val REQUEST_GOOGLE_PLAY_SERVICES = 1002
     val REQUEST_PERMISSION_GET_ACCOUNTS = 1003
-    private val BUTTON_TEXT = "Call Google Sheets API"
 
     private val PREF_ACCOUNT_NAME = "accountName"
-    private val SCOPES = mutableListOf(SheetsScopes.SPREADSHEETS_READONLY)
-
+    private val SCOPES = mutableListOf(SheetsScopes.SPREADSHEETS)
 
     private lateinit var mCallApiButton: Button
     lateinit var mOutputText: TextView
@@ -71,7 +71,10 @@ open class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
         verticalLayout {
             mCallApiButton = button {
                 text = "Button"
-                onClick { getResultsFromApi() }
+                onClick {
+                    setUpSheet()
+                    getResultsFromApi()
+                }
             }
             scrollView {
                 mOutputText = textView {
@@ -80,6 +83,10 @@ open class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
                 }
             }
         }
+    }
+
+    private fun setUpSheet() {
+
     }
 
     private fun getResultsFromApi() {
@@ -204,61 +211,64 @@ open class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
 
     internal class MakeRequestTask(credential: GoogleAccountCredential,
                                    val activity: MainActivity) : AsyncTask<Void, Void, List<String>>() {
+
+        private val SPREADSHEET_KEY = "SPREADSHEET_KEY"
+        var spreadsheetId: String? = activity.defaultSharedPreferences.getString(SPREADSHEET_KEY, null)
+        set(value) {
+            activity.defaultSharedPreferences.edit().putString(SPREADSHEET_KEY, value).apply()
+        }
+
         private var mService: Sheets = Sheets.Builder(AndroidHttp.newCompatibleTransport(), JacksonFactory.getDefaultInstance(), credential)
                 .setApplicationName("com.jlillioja.Press")
                 .build()
 
-        private var mLastError: Exception? = null
         private fun output(text: String) {
             activity.runOnUiThread {
                 activity.mOutputText.text = text
             }
         }
 
-        /**
-         * Background task to call Google Sheets API.
-         * @param params no parameters needed for this task.
-         */
         override fun doInBackground(vararg params: Void): List<String>? {
             try {
+                if (spreadsheetId == null) {
+                    spreadsheetId = createSheet().spreadsheetId
+                }
                 return dataFromApi
             } catch (e: UserRecoverableAuthIOException) {
-                ContextCompat.startActivity(activity, e.intent, null)
+                activity.startActivityForResult(e.intent, 0)
                 return dataFromApi
             } catch (e: Exception) {
-                mLastError = e
                 output("fucked")
                 Log.d("IO", e.getStackTraceString())
                 return null
             }
         }
 
-        /**
-         * Fetch a list of names and majors of students in a sample spreadsheet:
-         * https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
-         * @return List of names and majors
-         * *
-         * @throws IOException
-         */
+        private fun createSheet(): Spreadsheet {
+            val spreadsheet = Spreadsheet().apply {
+                sheets = listOf(Sheet())
+            }
+            return mService.spreadsheets()
+                    .create(spreadsheet)
+                    .execute()
+        }
+
         private val dataFromApi: List<String>
             @Throws(IOException::class)
             get() {
-                val spreadsheetId = "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
-                val range = "Class Data!A2:E"
+                val range = "Sheet1"
                 val results = ArrayList<String>()
-                val response = this.mService!!.spreadsheets().values()
+                val response = this.mService.spreadsheets().values()
                         .get(spreadsheetId, range)
                         .execute()
                 val values = response.getValues()
                 if (values != null) {
-                    results.add("Name, Major")
                     for (row in values) {
-                        results.add(row[0].toString() + ", " + row[4])
+                        results.add(row[0].toString() + ", " + row[1])
                     }
                 }
                 return results
             }
-
 
         override fun onPreExecute() {
             output("about to get stuff")
@@ -266,9 +276,9 @@ open class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
 
         override fun onPostExecute(result: List<String>?) {
             if (result == null || result.size === 0) {
-                output( "No results returned.")
+                output("No results returned.")
             } else {
-                output(result.fold("These are the results\n"){ old, new -> old+"\n"+new})
+                output(result.fold("These are the results\n") { old, new -> old + "\n" + new })
             }
         }
     }
