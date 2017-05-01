@@ -72,24 +72,19 @@ open class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
             mCallApiButton = button {
                 text = "Button"
                 onClick {
-                    setUpSheet()
-                    getResultsFromApi()
+                    setUpSheetsPermissions()
                 }
             }
             scrollView {
                 mOutputText = textView {
-                    text = "Click the button to link an account"
+                    text = "Click the button to link an account and create a sheet."
                     textSize = 18f
                 }
             }
         }
     }
 
-    private fun setUpSheet() {
-
-    }
-
-    private fun getResultsFromApi() {
+    private fun setUpSheetsPermissions() {
         if (!isGooglePlayServicesAvailable()) {
             acquireGooglePlayServices()
         } else if (mCredential.selectedAccountName == null) {
@@ -101,18 +96,12 @@ open class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
         }
     }
 
-    private fun getPermissions(credential: GoogleAccountCredential) {
-        MakeRequestTask(mCredential, this).execute()
-        Toast.makeText(this, "Fetching whatever", LENGTH_SHORT).show()
-    }
-
-    private fun output(text: String) {
-        mOutputText.text = text
-    }
-
     private fun isGooglePlayServicesAvailable(): Boolean {
-        val apiAvailability = GoogleApiAvailability.getInstance()
+        var apiAvailability = GoogleApiAvailability.getInstance()
         val connectionStatusCode = apiAvailability.isGooglePlayServicesAvailable(this)
+        if (apiAvailability.isUserResolvableError(connectionStatusCode)) {
+            showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode)
+        }
         return connectionStatusCode == ConnectionResult.SUCCESS
     }
 
@@ -140,16 +129,19 @@ open class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
         return networkInfo != null && networkInfo.isConnected
     }
 
+    private fun getPermissions(credential: GoogleAccountCredential) {
+        MakeRequestTask(mCredential, this).execute()
+        Toast.makeText(this, "Fetching whatever", LENGTH_SHORT).show()
+    }
+
 
     @AfterPermissionGranted(1003)
     private fun chooseAccount() {
-        if (EasyPermissions.hasPermissions(
-                this, Manifest.permission.GET_ACCOUNTS)) {
-            val accountName = getPreferences(Context.MODE_PRIVATE)
-                    .getString(PREF_ACCOUNT_NAME, null)
+        if (EasyPermissions.hasPermissions(this, Manifest.permission.GET_ACCOUNTS)) {
+            val accountName = getString(PREF_ACCOUNT_NAME)
             if (accountName != null) {
                 mCredential.selectedAccountName = accountName
-                getResultsFromApi()
+                setUpSheetsPermissions()
             } else {
                 // Start a dialog from which the user can choose an account
                 startActivityForResult(
@@ -173,7 +165,7 @@ open class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
             REQUEST_GOOGLE_PLAY_SERVICES -> if (resultCode != Activity.RESULT_OK) {
                 mOutputText.text = "This app requires Google Play Services. Please install " + "Google Play Services on your device and relaunch this app."
             } else {
-                getResultsFromApi()
+                setUpSheetsPermissions()
             }
             REQUEST_ACCOUNT_PICKER -> if (resultCode == Activity.RESULT_OK && data != null &&
                     data.extras != null) {
@@ -184,11 +176,11 @@ open class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
                     editor.putString(PREF_ACCOUNT_NAME, accountName)
                     editor.apply()
                     mCredential.selectedAccountName = accountName
-                    getResultsFromApi()
+                    setUpSheetsPermissions()
                 }
             }
             REQUEST_AUTHORIZATION -> if (resultCode == Activity.RESULT_OK) {
-                getResultsFromApi()
+                setUpSheetsPermissions()
             }
         }
     }
@@ -275,11 +267,15 @@ open class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
         }
 
         override fun onPostExecute(result: List<String>?) {
-            if (result == null || result.size === 0) {
+            if (result == null || result.isEmpty()) {
                 output("No results returned.")
             } else {
                 output(result.fold("These are the results\n") { old, new -> old + "\n" + new })
             }
         }
     }
+}
+
+fun Activity.getString(key: String) : String? {
+    return this.getPreferences(Context.MODE_PRIVATE).getString(key, null)
 }
