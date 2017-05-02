@@ -131,7 +131,7 @@ open class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
 
     private fun getPermissions(credential: GoogleAccountCredential) {
         MakeRequestTask(mCredential, this).execute()
-        Toast.makeText(this, "Fetching whatever", LENGTH_SHORT).show()
+        Toast.makeText(this, "Fetching...", LENGTH_SHORT).show()
     }
 
 
@@ -158,8 +158,7 @@ open class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
         }
     }
 
-    override fun onActivityResult(
-            requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             REQUEST_GOOGLE_PLAY_SERVICES -> if (resultCode != Activity.RESULT_OK) {
@@ -225,10 +224,10 @@ open class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
                 if (spreadsheetId == null) {
                     spreadsheetId = createSheet().spreadsheetId
                 }
-                return dataFromApi
+                return data
             } catch (e: UserRecoverableAuthIOException) {
                 activity.startActivityForResult(e.intent, 0)
-                return dataFromApi
+                return null
             } catch (e: Exception) {
                 output("fucked")
                 Log.d("IO", e.getStackTraceString())
@@ -245,7 +244,9 @@ open class MainActivity : Activity(), EasyPermissions.PermissionCallbacks {
                     .execute()
         }
 
-        private val dataFromApi: List<String>
+        override fun
+
+        private val data: List<String>
             @Throws(IOException::class)
             get() {
                 val range = "Sheet1"
